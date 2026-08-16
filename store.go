@@ -103,7 +103,8 @@ func (s *Service) Register(username, password string) (Member, error) {
 	record := &memberRecord{
 		Member:   Member{ID: id, Username: username},
 		Password: password,
-		Cart:     &cart{MemberID: id},
+		// Initialize the cart item map so the first AddToCart does not write to a nil map.
+		Cart: &cart{MemberID: id, Items: make(map[string]int)},
 	}
 	s.members[id] = record
 	s.byName[username] = id
