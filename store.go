@@ -103,7 +103,7 @@ func (s *Service) Register(username, password string) (Member, error) {
 	record := &memberRecord{
 		Member:   Member{ID: id, Username: username},
 		Password: password,
-		Cart:     &cart{MemberID: id},
+		Cart:     &cart{MemberID: id, Items: make(map[string]int)},
 	}
 	s.members[id] = record
 	s.byName[username] = id
@@ -144,6 +144,9 @@ func (s *Service) AddToCart(memberID, productID string, quantity int) (CartView,
 	}
 	if _, exists := s.byID[productID]; !exists {
 		return CartView{}, ErrProductNotFound
+	}
+	if record.Cart.Items == nil {
+		record.Cart.Items = make(map[string]int)
 	}
 	record.Cart.Items[productID] += quantity
 	return s.cartViewLocked(record.Cart), nil
